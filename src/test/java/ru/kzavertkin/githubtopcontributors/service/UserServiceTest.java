@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import ru.kzavertkin.githubtopcontributors.model.User;
+import ru.kzavertkin.githubtopcontributors.service.exception.UserNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
@@ -23,7 +24,7 @@ class UserServiceTest {
     private UserService userService;
 
     @Test
-    void getUser() {
+    void getUser() throws UserNotFoundException {
         String ownerName = "someusername";
         User user = new User();
         user.setLogin(ownerName);

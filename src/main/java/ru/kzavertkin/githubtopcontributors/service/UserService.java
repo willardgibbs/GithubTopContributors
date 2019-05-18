@@ -1,9 +1,14 @@
 package ru.kzavertkin.githubtopcontributors.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import ru.kzavertkin.githubtopcontributors.model.User;
+import ru.kzavertkin.githubtopcontributors.service.exception.UserNotFoundException;
+
+import java.util.Optional;
 
 /**
  *
@@ -23,11 +28,18 @@ public class UserService {
      * @param ownerName - repository owner name
      * @return user class describing github api user with login equals ownerName
      */
-    public User getUser(String ownerName) {
+    public User getUser(String ownerName) throws UserNotFoundException {
         String url = getUrlForUser(ownerName);
-        User user;
-        user = restTemplate.getForObject(url, User.class);
-        return user;
+        try {
+            return Optional.ofNullable(restTemplate.getForObject(url, User.class))
+                    .orElseThrow(UserNotFoundException::new);
+        } catch (HttpClientErrorException e) {
+            HttpStatus statusCode = e.getStatusCode();
+            if (statusCode == HttpStatus.NOT_FOUND)
+                throw new UserNotFoundException();
+            else
+                throw e;
+        }
     }
 
     /**

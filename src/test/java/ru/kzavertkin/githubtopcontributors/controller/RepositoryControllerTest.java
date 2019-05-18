@@ -4,15 +4,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.kzavertkin.githubtopcontributors.GithubTopContributorsApplication;
 import ru.kzavertkin.githubtopcontributors.model.Contributor;
-import ru.kzavertkin.githubtopcontributors.service.TopContributorsService;
+import ru.kzavertkin.githubtopcontributors.service.RepositoryService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,12 +26,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-class TopContributorsControllerTest {
+class RepositoryControllerTest {
     @Autowired
     private MockMvc mvc;
 
     @MockBean
-    private TopContributorsService topContributorsService;
+    private RepositoryService repositoryService;
 
     @Test
     void getTop3Contributors() throws Exception {
@@ -43,8 +41,8 @@ class TopContributorsControllerTest {
 
         List<Contributor> contributorList = getContributorList();
 
-        doReturn(contributorList).when(topContributorsService).getTopContributors(ownerName, repositoryName, limit);
-        mvc.perform(get("/top3contributors/" + ownerName + "/" + repositoryName)
+        doReturn(contributorList).when(repositoryService).getTopContributors(ownerName, repositoryName, limit);
+        mvc.perform(get("/githubapiclient/repos/" + ownerName + "/" + repositoryName + "/contributors/top3")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))

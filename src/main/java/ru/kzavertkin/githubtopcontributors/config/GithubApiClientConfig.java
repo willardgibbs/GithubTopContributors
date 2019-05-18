@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
  */
 @Component
 @Slf4j
-public class TopContributorsConfig {
+public class GithubApiClientConfig {
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
