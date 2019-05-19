@@ -1,6 +1,6 @@
 package ru.kzavertkin.githubtopcontributors.model;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -14,7 +14,7 @@ public class Contributor implements Serializable {
 
     private int id;
 
-    @SerializedName("avatar_url")
+    @JsonProperty("avatar_url")
     private String avatarUrl;
 
     private String login;
@@ -23,42 +23,42 @@ public class Contributor implements Serializable {
 
     private String url;
 
-    @SerializedName("node_id")
+    @JsonProperty("node_id")
     private String nodeId;
 
-    @SerializedName("gravatar_id")
+    @JsonProperty("gravatar_id")
     private String gravatarId;
 
-    @SerializedName("html_url")
+    @JsonProperty("html_url")
     private String htmlUrl;
 
-    @SerializedName("followers_url")
+    @JsonProperty("followers_url")
     private String followersUrl;
 
-    @SerializedName("following_url")
+    @JsonProperty("following_url")
     private String followingUrl;
 
-    @SerializedName("gists_url")
+    @JsonProperty("gists_url")
     private String gistsUrl;
 
-    @SerializedName("starred_url")
+    @JsonProperty("starred_url")
     private String starredUrl;
 
-    @SerializedName("subscription_url")
-    private String subscriptionUrl;
+    @JsonProperty("subscriptions_url")
+    private String subscriptionsUrl;
 
-    @SerializedName("organizations_url")
-    private String organizations_url;
+    @JsonProperty("organizations_url")
+    private String organizationsUrl;
 
-    @SerializedName("repos_url")
+    @JsonProperty("repos_url")
     private String reposUrl;
 
-    @SerializedName("events_url")
+    @JsonProperty("events_url")
     private String eventsUrl;
 
-    @SerializedName("received_events_url")
+    @JsonProperty("received_events_url")
     private String receivedEventsUrl;
 
-    @SerializedName("site_admin")
-    private String siteAdmin;
+    @JsonProperty("site_admin")
+    private boolean siteAdmin;
 }

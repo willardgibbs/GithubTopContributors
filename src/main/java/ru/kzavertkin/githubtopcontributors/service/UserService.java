@@ -1,6 +1,7 @@
 package ru.kzavertkin.githubtopcontributors.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -16,7 +17,8 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class UserService {
-    private static final String USER_URL_PREFIX = "https://api.github.com/users/";
+    @Value("${github.api.users.url}")
+    private String userUrlPrefix;
 
     private RestTemplate restTemplate;
 
@@ -30,10 +32,12 @@ public class UserService {
      */
     public User getUser(String ownerName) throws UserNotFoundException {
         String url = getUrlForUser(ownerName);
+        log.debug("Url for getting user: '{}'", url);
         try {
             return Optional.ofNullable(restTemplate.getForObject(url, User.class))
                     .orElseThrow(UserNotFoundException::new);
         } catch (HttpClientErrorException e) {
+            log.error("Error while call " + url, e);
             HttpStatus statusCode = e.getStatusCode();
             if (statusCode == HttpStatus.NOT_FOUND)
                 throw new UserNotFoundException();
@@ -47,6 +51,6 @@ public class UserService {
      * @return url for getting github api user
      */
     private String getUrlForUser(String ownerName) {
-        return USER_URL_PREFIX + ownerName;
+        return userUrlPrefix + ownerName;
     }
 }

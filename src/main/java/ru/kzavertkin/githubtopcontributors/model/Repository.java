@@ -1,6 +1,7 @@
 package ru.kzavertkin.githubtopcontributors.model;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,20 +14,20 @@ import java.util.Date;
 public class Repository implements Serializable {
     private int id;
 
-    @SerializedName("node_id")
+    @JsonProperty("node_id")
     private String nodeId;
 
     private String name;
 
-    @SerializedName("full_name")
+    @JsonProperty("full_name")
     private String fullName;
 
-    @SerializedName("private")
+    @JsonProperty("private")
     private boolean isPrivate;
 
     private User owner;
 
-    @SerializedName("html_url")
+    @JsonProperty("html_url")
     private String htmlUrl;
 
     private String description;
@@ -35,189 +36,195 @@ public class Repository implements Serializable {
 
     private String url;
 
-    @SerializedName("forks_url")
+    @JsonProperty("forks_url")
     private String forksUrl;
 
-    @SerializedName("keys_url")
+    @JsonProperty("keys_url")
     private String keysUrl;
 
-    @SerializedName("collaborators_url")
+    @JsonProperty("collaborators_url")
     private String collaboratorsUrl;
 
-    @SerializedName("teams_url")
+    @JsonProperty("teams_url")
     private String teamsUrl;
 
-    @SerializedName("hooks_url")
+    @JsonProperty("hooks_url")
     private String hooksUrl;
 
-    @SerializedName("issue_events_url")
+    @JsonProperty("issue_events_url")
     private String issueEventsUrl;
 
-    @SerializedName("events_url")
+    @JsonProperty("events_url")
     private String eventsUrl;
 
-    @SerializedName("assignees_url")
+    @JsonProperty("assignees_url")
     private String assigneesUrl;
 
-    @SerializedName("branches_url")
+    @JsonProperty("branches_url")
     private String branchesUrl;
 
-    @SerializedName("tags_url")
+    @JsonProperty("tags_url")
     private String tagsUrl;
 
-    @SerializedName("blobs_url")
+    @JsonProperty("blobs_url")
     private String blobsUrl;
 
-    @SerializedName("git_tags_url")
+    @JsonProperty("git_tags_url")
     private String gitTagsUrl;
 
-    @SerializedName("git_refs_url")
+    @JsonProperty("git_refs_url")
     private String gitRefsUrl;
 
-    @SerializedName("trees_url")
+    @JsonProperty("trees_url")
     private String treesUrl;
 
-    @SerializedName("statuses_url")
+    @JsonProperty("statuses_url")
     private String statusesUrl;
 
-    @SerializedName("languages_url")
+    @JsonProperty("languages_url")
     private String languagesUrl;
 
-    @SerializedName("stargazers_url")
+    @JsonProperty("mirror_url")
+    private String mirrorUrl;
+
+    @JsonProperty("stargazers_url")
     private String stargazersUrl;
 
-    @SerializedName("contributors_url")
+    @JsonProperty("contributors_url")
     private String contributorsUrl;
 
-    @SerializedName("subscribers_url")
+    @JsonProperty("subscribers_url")
     private String subscribersUrl;
 
-    @SerializedName("subscription_url")
+    @JsonProperty("subscription_url")
     private String subscriptionUrl;
 
-    @SerializedName("commits_url")
+    @JsonProperty("commits_url")
     private String commitsUrl;
 
-    @SerializedName("git_commits_url")
+    @JsonProperty("git_commits_url")
     private String gitCommitsUrl;
 
-    @SerializedName("comments_url")
+    @JsonProperty("comments_url")
     private String commentsUrl;
 
-    @SerializedName("issue_comment_url")
-    private String issue_commentUrl;
+    @JsonProperty("issue_comment_url")
+    private String issueCommentUrl;
 
-    @SerializedName("contents_url")
+    @JsonProperty("contents_url")
     private String contentsUrl;
 
-    @SerializedName("compare_url")
+    @JsonProperty("compare_url")
     private String compareUrl;
 
-    @SerializedName("merges_url")
+    @JsonProperty("merges_url")
     private String mergesUrl;
 
-    @SerializedName("archive_url")
+    @JsonProperty("archive_url")
     private String archiveUrl;
 
-    @SerializedName("downloads_url")
+    @JsonProperty("downloads_url")
     private String downloadsUrl;
 
-    @SerializedName("issues_url")
+    @JsonProperty("issues_url")
     private String issuesUrl;
 
-    @SerializedName("pulls_url")
+    @JsonProperty("pulls_url")
     private String pullsUrl;
 
-    @SerializedName("milestones_url")
+    @JsonProperty("milestones_url")
     private String milestonesUrl;
 
-    @SerializedName("notifications_url")
+    @JsonProperty("notifications_url")
     private String notificationsUrl;
 
-    @SerializedName("labels_url")
+    @JsonProperty("labels_url")
     private String labelsUrl;
 
-    @SerializedName("releases_url")
+    @JsonProperty("releases_url")
     private String releasesUrl;
 
-    @SerializedName("deployments_url")
+    @JsonProperty("deployments_url")
     private String deploymentsUrl;
 
-    @SerializedName("created_at")
+    @JsonProperty("created_at")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
     private Date createdAt;
 
-    @SerializedName("updated_at")
+    @JsonProperty("updated_at")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
     private Date updatedAt;
 
-    @SerializedName("pushed_at")
+    @JsonProperty("pushed_at")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
     private Date pushedAt;
 
-    @SerializedName("git_url")
+    @JsonProperty("git_url")
     private String gitUrl;
 
-    @SerializedName("ssh_url")
+    @JsonProperty("ssh_url")
     private String sshUrl;
 
-    @SerializedName("clone_url")
+    @JsonProperty("clone_url")
     private String cloneUrl;
 
-    @SerializedName("svn_url")
+    @JsonProperty("svn_url")
     private String svnUrl;
 
     private String homepage;
 
     private int size;
 
-    @SerializedName("stargazers_count")
+    @JsonProperty("stargazers_count")
     private int stargazersCount;
 
-    @SerializedName("watchers_count")
+    @JsonProperty("watchers_count")
     private int watchersCount;
 
     private String language;
 
-    @SerializedName("has_issues")
+    @JsonProperty("has_issues")
     private boolean hasIssues;
 
-    @SerializedName("has_projects")
+    @JsonProperty("has_projects")
     private boolean hasProjects;
 
-    @SerializedName("has_downloads")
+    @JsonProperty("has_downloads")
     private boolean hasDownloads;
 
-    @SerializedName("has_wiki")
+    @JsonProperty("has_wiki")
     private boolean hasWiki;
 
-    @SerializedName("has_pages")
+    @JsonProperty("has_pages")
     private boolean hasPages;
 
-    @SerializedName("forks_count")
+    @JsonProperty("forks_count")
     private int forksCount;
 
     private boolean archived;
 
     private boolean disabled;
 
-    @SerializedName("open_issues_count")
+    @JsonProperty("open_issues_count")
     private int openIssuesCount;
 
     private License license;
 
     private int forks;
 
-    @SerializedName("open_issues")
+    @JsonProperty("open_issues")
     private int openIssues;
 
     private int watchers;
 
-    @SerializedName("default_branch")
+    @JsonProperty("default_branch")
     private String defaultBranch;
 
     private Organization organization;
 
-    @SerializedName("network_count")
+    @JsonProperty("network_count")
     private int networkCount;
 
-    @SerializedName("subscribers_count")
+    @JsonProperty("subscribers_count")
     private int subscribersCount;
 }

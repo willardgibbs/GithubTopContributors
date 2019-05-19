@@ -1,43 +1,51 @@
 package ru.kzavertkin.githubtopcontributors.service;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import ru.kzavertkin.githubtopcontributors.model.Contributor;
 import ru.kzavertkin.githubtopcontributors.model.Repository;
 import ru.kzavertkin.githubtopcontributors.model.User;
+import ru.kzavertkin.githubtopcontributors.service.exception.ContributorNotFoundException;
 import ru.kzavertkin.githubtopcontributors.service.exception.RepositoryNotFoundException;
 import ru.kzavertkin.githubtopcontributors.service.exception.UserNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.doThrow;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-class RepositoryServiceTest {
+@ActiveProfiles("test")
+public class RepositoryServiceTest {
+    @Value("${github.api.repos.url}")
+    private String repositoryUrlPrefix;
+
     @MockBean
     private RestTemplate restTemplate;
 
-    @Autowired
+    @SpyBean
     private RepositoryService repositoryService;
 
     @MockBean
     private UserService userService;
 
     @Test
-    void getRepository() throws RepositoryNotFoundException {
+    public void getRepository() throws RepositoryNotFoundException {
         String ownerName = "someusername";
         String repositoryName = "somerep";
 
@@ -48,15 +56,62 @@ class RepositoryServiceTest {
         repository.setOwner(user);
         repository.setName(repositoryName);
 
-        String url = "https://api.github.com/repos/" + ownerName + "/" + repositoryName;
+        String url = repositoryUrlPrefix + ownerName + "/" + repositoryName;
 
         doReturn(repository).when(restTemplate).getForObject(url, Repository.class);
 
         assertEquals(repository, repositoryService.getRepository(user, repositoryName));
     }
 
+    @Test(expected = RepositoryNotFoundException.class)
+    public void getRepositoryWithNullRepository() throws RepositoryNotFoundException {
+        String ownerName = "someusername";
+        String repositoryName = "somerep";
+
+        User user = new User();
+        user.setLogin(ownerName);
+
+        String url = repositoryUrlPrefix + ownerName + "/" + repositoryName;
+
+        doReturn(null).when(restTemplate).getForObject(url, Repository.class);
+
+        repositoryService.getRepository(user, repositoryName);
+    }
+
+    @Test(expected = RepositoryNotFoundException.class)
+    public void getRepositoryWithHttpNotFound() throws RepositoryNotFoundException {
+        String ownerName = "someusername";
+        String repositoryName = "somerep";
+
+        User user = new User();
+        user.setLogin(ownerName);
+
+        String url = repositoryUrlPrefix + ownerName + "/" + repositoryName;
+
+        HttpClientErrorException httpClientErrorException = new HttpClientErrorException(HttpStatus.NOT_FOUND);
+        doThrow(httpClientErrorException).when(restTemplate).getForObject(url, Repository.class);
+
+        repositoryService.getRepository(user, repositoryName);
+    }
+
+    @Test(expected = HttpClientErrorException.class)
+    public void getRepositoryWithAnotherHttpStatus() throws RepositoryNotFoundException {
+        String ownerName = "someusername";
+        String repositoryName = "somerep";
+
+        User user = new User();
+        user.setLogin(ownerName);
+
+        String url = repositoryUrlPrefix + ownerName + "/" + repositoryName;
+
+        HttpClientErrorException httpClientErrorException = new HttpClientErrorException(HttpStatus.FORBIDDEN);
+        doThrow(httpClientErrorException).when(restTemplate).getForObject(url, Repository.class);
+
+        repositoryService.getRepository(user, repositoryName);
+    }
+
     @Test
-    void getContributors() throws ContributorNotFoundException {
+    public void getContributors() throws ContributorNotFoundException {
         String ownerName = "someusername";
         String repositoryName = "somerep";
 
@@ -67,7 +122,7 @@ class RepositoryServiceTest {
         repository.setOwner(user);
         repository.setName(repositoryName);
 
-        String url = "https://api.github.com/repos/" + ownerName + "/" + repositoryName
+        String url = repositoryUrlPrefix + ownerName + "/" + repositoryName
                 + "/contributors?q=contributions&order=desc";
 
         List<Contributor> contributorList = new ArrayList<>();
@@ -87,7 +142,77 @@ class RepositoryServiceTest {
     }
 
     @Test
-    void getTopContributors() throws UserNotFoundException, ContributorNotFoundException, RepositoryNotFoundException {
+    public void getContributorsWithNull() throws ContributorNotFoundException {
+        String ownerName = "someusername";
+        String repositoryName = "somerep";
+
+        User user = new User();
+        user.setLogin(ownerName);
+
+        Repository repository = new Repository();
+        repository.setOwner(user);
+        repository.setName(repositoryName);
+
+        String url = repositoryUrlPrefix + ownerName + "/" + repositoryName
+                + "/contributors?q=contributions&order=desc";
+
+        ResponseEntity<List<Contributor>> listResponseEntity = new ResponseEntity<>(null, HttpStatus.OK);
+
+        doReturn(listResponseEntity).when(restTemplate).exchange(url, HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<Contributor>>() {
+                });
+
+        assertEquals(new ArrayList<>(), repositoryService.getContributors(repository));
+    }
+
+    @Test(expected = ContributorNotFoundException.class)
+    public void getContributorsWithHttpNotFound() throws ContributorNotFoundException {
+        String ownerName = "someusername";
+        String repositoryName = "somerep";
+
+        User user = new User();
+        user.setLogin(ownerName);
+
+        Repository repository = new Repository();
+        repository.setOwner(user);
+        repository.setName(repositoryName);
+
+        String url = repositoryUrlPrefix + ownerName + "/" + repositoryName
+                + "/contributors?q=contributions&order=desc";
+
+        HttpClientErrorException httpClientErrorException = new HttpClientErrorException(HttpStatus.NOT_FOUND);
+        doThrow(httpClientErrorException).when(restTemplate).exchange(url, HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<Contributor>>() {
+                });
+
+        repositoryService.getContributors(repository);
+    }
+
+    @Test(expected = HttpClientErrorException.class)
+    public void getContributorsWithAnotherHttpStatus() throws ContributorNotFoundException {
+        String ownerName = "someusername";
+        String repositoryName = "somerep";
+
+        User user = new User();
+        user.setLogin(ownerName);
+
+        Repository repository = new Repository();
+        repository.setOwner(user);
+        repository.setName(repositoryName);
+
+        String url = repositoryUrlPrefix + ownerName + "/" + repositoryName
+                + "/contributors?q=contributions&order=desc";
+
+        HttpClientErrorException httpClientErrorException = new HttpClientErrorException(HttpStatus.FORBIDDEN);
+        doThrow(httpClientErrorException).when(restTemplate).exchange(url, HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<Contributor>>() {
+                });
+
+        repositoryService.getContributors(repository);
+    }
+
+    @Test
+    public void getTopContributors() throws UserNotFoundException, ContributorNotFoundException, RepositoryNotFoundException {
         String ownerName = "someusername";
         String repositoryName = "somerep";
         int limit = 3;
@@ -100,16 +225,14 @@ class RepositoryServiceTest {
         repository.setOwner(user);
         repository.setName(repositoryName);
 
-        RepositoryService repositoryServiceSpy = spy(repositoryService);
-
         doReturn(user).when(userService).getUser(ownerName);
-        doReturn(contributorList).when(repositoryServiceSpy).getContributors(repository);
-        doReturn(repository).when(repositoryServiceSpy).getRepository(user, repositoryName);
+        doReturn(contributorList).when(repositoryService).getContributors(repository);
+        doReturn(repository).when(repositoryService).getRepository(user, repositoryName);
 
         List<Contributor> expectedContributorList = new ArrayList<>(contributorList);
         expectedContributorList.remove(3);
 
-        assertEquals(expectedContributorList, repositoryServiceSpy.getTopContributors(ownerName, repositoryName,
+        assertEquals(expectedContributorList, repositoryService.getTopContributors(ownerName, repositoryName,
                 limit));
     }
 

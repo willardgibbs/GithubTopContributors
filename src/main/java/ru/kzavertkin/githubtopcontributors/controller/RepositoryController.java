@@ -5,8 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.kzavertkin.githubtopcontributors.model.Contributor;
-import ru.kzavertkin.githubtopcontributors.service.ContributorNotFoundException;
 import ru.kzavertkin.githubtopcontributors.service.RepositoryService;
+import ru.kzavertkin.githubtopcontributors.service.exception.ContributorNotFoundException;
 import ru.kzavertkin.githubtopcontributors.service.exception.RepositoryNotFoundException;
 import ru.kzavertkin.githubtopcontributors.service.exception.UserNotFoundException;
 
@@ -36,11 +36,15 @@ public class RepositoryController {
         try {
             return repositoryService.getTopContributors(ownerName, repositoryName, 3);
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User " + ownerName + " not found", e);
+            log.error("UserNotFoundException was catched, rethrow 404");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User " + ownerName + " is not found", e);
         } catch (RepositoryNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Repository " + repositoryName + " not found", e);
+            log.error("RepositoryNotFoundException was catched, rethrow 404");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Repository " + repositoryName + " is not found", e);
         } catch (ContributorNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Contributors not found", e);
+            log.error("ContributorNotFoundException was catched, rethrow 404");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Contributors is not found", e);
         }
     }
 

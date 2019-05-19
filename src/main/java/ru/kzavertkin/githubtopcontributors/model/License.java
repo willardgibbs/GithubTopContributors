@@ -1,6 +1,6 @@
 package ru.kzavertkin.githubtopcontributors.model;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,11 +11,11 @@ public class License implements Serializable {
 
     private String name;
 
-    @SerializedName("spdx_id")
+    @JsonProperty("spdx_id")
     private String spdxId;
 
     private String url;
 
-    @SerializedName("node_id")
+    @JsonProperty("node_id")
     private String nodeId;
 }
