@@ -2,10 +2,12 @@ package ru.kzavertkin.githubtopcontributors.service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -28,17 +30,22 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
-@SpringBootTest
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
+@SpringBootTest
 public class RepositoryServiceTest {
+    @Configuration
+    @Import(RepositoryService.class)
+    static class RepositoryServiceTestContextConfiguration {
+    }
+
     @Value("${github.api.repos.url}")
     private String repositoryUrlPrefix;
 
     @MockBean
     private RestTemplate restTemplate;
 
-    @SpyBean
+    @Autowired
     private RepositoryService repositoryService;
 
     @MockBean
@@ -217,17 +224,27 @@ public class RepositoryServiceTest {
         String repositoryName = "somerep";
         int limit = 3;
 
-        List<Contributor> contributorList = getContributorList();
-
         User user = new User();
-        Repository repository = new Repository();
         user.setLogin(ownerName);
+
+        doReturn(user).when(userService).getUser(ownerName);
+
+        Repository repository = new Repository();
         repository.setOwner(user);
         repository.setName(repositoryName);
 
-        doReturn(user).when(userService).getUser(ownerName);
-        doReturn(contributorList).when(repositoryService).getContributors(repository);
-        doReturn(repository).when(repositoryService).getRepository(user, repositoryName);
+        String repositoryUrl = repositoryUrlPrefix + ownerName + "/" + repositoryName;
+        doReturn(repository).when(restTemplate).getForObject(repositoryUrl, Repository.class);
+
+        List<Contributor> contributorList = getContributorList();
+        ResponseEntity<List<Contributor>> listResponseEntity = new ResponseEntity<>(contributorList, HttpStatus.OK);
+
+        String contributorsUrl = repositoryUrlPrefix + ownerName + "/" + repositoryName
+                + "/contributors?q=contributions&order=desc";
+
+        doReturn(listResponseEntity).when(restTemplate).exchange(contributorsUrl, HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<Contributor>>() {
+                });
 
         List<Contributor> expectedContributorList = new ArrayList<>(contributorList);
         expectedContributorList.remove(3);
