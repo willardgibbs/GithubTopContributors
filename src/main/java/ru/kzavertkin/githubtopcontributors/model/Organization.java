@@ -2,10 +2,12 @@ package ru.kzavertkin.githubtopcontributors.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
 @Data
+@Accessors(chain = true)
 public class Organization implements Serializable {
     private String login;
 

@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'application'
+    id 'org.springframework.boot' version '2.2.6.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+}
+
+group = 'ru.kzavertkin.githubtopcontributors'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+mainClassName = 'ru.kzavertkin.githubtopcontributors.GithubApiClientApplication'
+
+repositories {
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:Hoxton.SR4"
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+    implementation 'org.codehaus.groovy:groovy-all:2.4.9'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+    testImplementation 'junit:junit'
+    testImplementation "org.springframework.cloud:spring-cloud-contract-wiremock"
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

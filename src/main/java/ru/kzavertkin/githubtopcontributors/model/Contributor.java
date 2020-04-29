@@ -2,6 +2,7 @@ package ru.kzavertkin.githubtopcontributors.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
@@ -9,6 +10,7 @@ import java.io.Serializable;
  *
  */
 @Data
+@Accessors(chain = true)
 public class Contributor implements Serializable {
     private int contributions;
 

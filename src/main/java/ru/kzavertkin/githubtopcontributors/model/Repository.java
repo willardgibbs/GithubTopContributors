@@ -3,6 +3,7 @@ package ru.kzavertkin.githubtopcontributors.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -11,6 +12,7 @@ import java.util.Date;
  *
  */
 @Data
+@Accessors(chain = true)
 public class Repository implements Serializable {
     private int id;
 

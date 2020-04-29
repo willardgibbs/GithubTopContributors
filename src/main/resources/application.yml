@@ -1,0 +1,13 @@
+github:
+  api:
+    url: 'https://api.github.com'
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+feign:
+  hystrix:
+    enabled: true
+  httpclient:
+    connection-timeout: 3000
