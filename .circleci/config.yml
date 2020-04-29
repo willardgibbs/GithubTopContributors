@@ -31,8 +31,8 @@ jobs:
             - v1-dependencies-
 
       - run:
-        name: "Download dependencies"
-        command: gradle dependencies
+          name: "Download dependencies"
+          command: gradle dependencies
 
       - save_cache:
           paths:
